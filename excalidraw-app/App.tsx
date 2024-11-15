@@ -102,6 +102,7 @@ import { OverwriteConfirmDialog } from "../packages/excalidraw/components/Overwr
 import Trans from "../packages/excalidraw/components/Trans";
 import { ShareDialog, shareDialogStateAtom } from "./share/ShareDialog";
 import CollabError, { collabErrorIndicatorAtom } from "./collab/CollabError";
+import { Login} from "./login/login"
 import type { RemoteExcalidrawElement } from "../packages/excalidraw/data/reconcile";
 import {
   CommandPalette,
@@ -212,7 +213,9 @@ const initializeScene = async (opts: {
     scrollToContent?: boolean;
   } = await loadScene(null, null, localDataState);
 
-  let roomLinkData = getCollaborationLinkData(window.location.href);
+  let roomLinkData = getCollaborationLinkData('http://localhost:5173/main#room=d8e0fdbdece7fe941d32,ECy-gX59E2jgJIquMhIdMA' || window.location.href);
+  console.log('roomLinkData',roomLinkData)
+  console.log('window.location.href',window.location.href)
   const isExternalScene = !!(id || jsonBackendMatch || roomLinkData);
   if (isExternalScene) {
     if (
@@ -1125,11 +1128,12 @@ const ExcalidrawWrapper = () => {
 };
 
 const ExcalidrawApp = () => {
+  console.log('window.location.href',window.location.href)
   return (
     <TopErrorBoundary>
       <Provider unstable_createStore={() => appJotaiStore}>
-        <div>wwww</div>
-        <ExcalidrawWrapper />
+      <Login></Login>     
+        {/* <ExcalidrawWrapper /> */}
       </Provider>
     </TopErrorBoundary>
   );
