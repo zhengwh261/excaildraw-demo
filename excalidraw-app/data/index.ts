@@ -3,7 +3,7 @@ import {
   decompressData,
 } from "../../packages/excalidraw/data/encode";
 import {
-  decryptData,
+  // decryptData,
   generateEncryptionKey,
   IV_LENGTH_BYTES,
 } from "../../packages/excalidraw/data/encryption";
@@ -134,6 +134,7 @@ export const isCollaborationLink = (link: string) => {
 
 export const getCollaborationLinkData = (link: string) => {
   const hash = new URL(link).hash;
+  console.log('hash',hash)
   const match = hash.match(RE_COLLAB_LINK);
   if (match && match[2].length !== 22) {
     window.alert(t("alerts.invalidEncryptionKey"));
@@ -177,11 +178,13 @@ const legacy_decodeFromBackend = async ({
     // Buffer should contain both the IV (fixed length) and encrypted data
     const iv = buffer.slice(0, IV_LENGTH_BYTES);
     const encrypted = buffer.slice(IV_LENGTH_BYTES, buffer.byteLength);
-    decrypted = await decryptData(new Uint8Array(iv), encrypted, decryptionKey);
+    decrypted = encrypted
+    // decrypted = await decryptData(new Uint8Array(iv), encrypted, decryptionKey);
   } catch (error: any) {
     // Fixed IV (old format, backward compatibility)
     const fixedIv = new Uint8Array(IV_LENGTH_BYTES);
-    decrypted = await decryptData(fixedIv, buffer, decryptionKey);
+    decrypted = buffer.slice(IV_LENGTH_BYTES, buffer.byteLength)
+    // decrypted = await decryptData(fixedIv, buffer, decryptionKey);
   }
 
   // We need to convert the decrypted array buffer to a string

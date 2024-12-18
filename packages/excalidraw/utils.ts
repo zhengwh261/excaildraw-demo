@@ -779,7 +779,9 @@ export const getFrame = () => {
   }
 };
 
-export const isRunningInIframe = () => getFrame() === "iframe";
+export const isRunningInIframe = () => {
+  return false
+};
 
 export const isPromiseLike = (
   value: any,

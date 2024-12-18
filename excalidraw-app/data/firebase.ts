@@ -17,7 +17,7 @@ import { FILE_CACHE_MAX_AGE_SEC } from "../app_constants";
 import { decompressData } from "../../packages/excalidraw/data/encode";
 import {
   encryptData,
-  decryptData,
+  // decryptData,
 } from "../../packages/excalidraw/data/encryption";
 import { MIME_TYPES } from "../../packages/excalidraw/constants";
 import type { SyncableExcalidrawElement } from ".";
@@ -134,7 +134,8 @@ const decryptElements = async (
   const ciphertext = data.ciphertext.toUint8Array();
   const iv = data.iv.toUint8Array();
 
-  const decrypted = await decryptData(iv, ciphertext, roomKey);
+  // const decrypted = await decryptData(iv, ciphertext, roomKey);
+  const decrypted = ciphertext
   const decodedData = new TextDecoder("utf-8").decode(
     new Uint8Array(decrypted),
   );

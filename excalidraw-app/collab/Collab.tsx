@@ -74,7 +74,7 @@ import {
   isInitializedImageElement,
 } from "../../packages/excalidraw/element/typeChecks";
 import { newElementWith } from "../../packages/excalidraw/element/mutateElement";
-import { decryptData } from "../../packages/excalidraw/data/encryption";
+// import { decryptData } from "../../packages/excalidraw/data/encryption";
 import { resetBrowserStateVersions } from "../data/tabSync";
 import { LocalData } from "../data/LocalData";
 import { atom } from "jotai";
@@ -299,13 +299,13 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         !this.state.dialogNotifiedErrors[errorMessage] ||
         !this.isCollaborating()
       ) {
-        this.setErrorDialog(errorMessage);
-        this.setState({
-          dialogNotifiedErrors: {
-            ...this.state.dialogNotifiedErrors,
-            [errorMessage]: true,
-          },
-        });
+        // this.setErrorDialog(errorMessage);
+        // this.setState({
+        //   dialogNotifiedErrors: {
+        //     ...this.state.dialogNotifiedErrors,
+        //     [errorMessage]: true,
+        //   },
+        // });
       }
 
       if (this.isCollaborating()) {
@@ -413,14 +413,15 @@ class Collab extends PureComponent<CollabProps, CollabState> {
     decryptionKey: string,
   ): Promise<ValueOf<SocketUpdateDataSource>> => {
     try {
-      const decrypted = await decryptData(iv, encryptedData, decryptionKey);
-
+    
+      const decrypted = encryptedData
+      // const decrypted = await decryptData(iv, encryptedData, decryptionKey);
       const decodedData = new TextDecoder("utf-8").decode(
         new Uint8Array(decrypted),
       );
       return JSON.parse(decodedData);
     } catch (error) {
-      window.alert(t("alerts.decryptFailed"));
+      // window.alert(t("alerts.decryptFailed"));
       console.error(error);
       return {
         type: WS_SUBTYPES.INVALID_RESPONSE,
@@ -530,13 +531,11 @@ class Collab extends PureComponent<CollabProps, CollabState> {
         if (!this.portal.roomKey) {
           return;
         }
-
         const decryptedData = await this.decryptPayload(
           iv,
           encryptedData,
           this.portal.roomKey,
         );
-
         switch (decryptedData.type) {
           case WS_SUBTYPES.INVALID_RESPONSE:
             return;

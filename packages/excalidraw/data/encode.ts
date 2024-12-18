@@ -1,5 +1,5 @@
 import { deflate, inflate } from "pako";
-import { encryptData, decryptData } from "./encryption";
+import { encryptData } from "./encryption";
 
 // -----------------------------------------------------------------------------
 // byte (binary) strings
@@ -281,14 +281,13 @@ const splitBuffers = (concatenatedBuffer: Uint8Array) => {
 
 /** @private */
 const _encryptAndCompress = async (
-  data: Uint8Array | string,
+  data: Uint8Array,
   encryptionKey: string,
 ) => {
-  const { encryptedBuffer, iv } = await encryptData(
+  const { encryptedBuffer, iv } =  await  encryptData(
     encryptionKey,
     deflate(data),
   );
-
   return { iv, buffer: new Uint8Array(encryptedBuffer) };
 };
 
@@ -346,9 +345,12 @@ const _decryptAndDecompress = async (
   decryptionKey: string,
   isCompressed: boolean,
 ) => {
-  decryptedBuffer = new Uint8Array(
-    await decryptData(iv, decryptedBuffer, decryptionKey),
-  );
+  // decryptedBuffer = new Uint8Array(
+  //   await decryptData(iv, decryptedBuffer, decryptionKey),
+  // );
+  // decryptedBuffer = new Uint8Array(
+  //   await decryptData(iv, decryptedBuffer, decryptionKey),
+  // );
 
   if (isCompressed) {
     return inflate(decryptedBuffer);

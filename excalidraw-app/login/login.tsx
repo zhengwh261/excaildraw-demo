@@ -4,7 +4,7 @@ import "./login.scss";
 
 
 
-export const Login = () => {
+export const Login = (props:{setFatherVisable :any} ) => {
   const [name, setName] = useState('');
   const [roomId, setRoomId] = useState('');
   const [messageApi, contextHolder] = message.useMessage();
@@ -25,7 +25,8 @@ export const Login = () => {
       });
       return
     }
-    window.open(`https://excalidraw.com/#room=${roomId}`,'_self')
+
+    // window.open(`https://excalidraw.com/#room=${roomId}?enterFrom=pc`,'_self')
   }
   return (
     <>
@@ -45,7 +46,6 @@ export const Login = () => {
           }]
         }
         onChange={(value)=> {
-          console.log('value',value)
           setRoomId(value)
         }}
         >

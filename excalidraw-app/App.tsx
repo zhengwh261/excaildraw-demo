@@ -61,6 +61,7 @@ import {
   isCollaborationLink,
   loadScene,
 } from "./data";
+import { Route, Routes } from 'react-router-dom'
 import {
   importFromLocalStorage,
   importUsernameFromLocalStorage,
@@ -102,12 +103,12 @@ import { OverwriteConfirmDialog } from "../packages/excalidraw/components/Overwr
 import Trans from "../packages/excalidraw/components/Trans";
 import { ShareDialog, shareDialogStateAtom } from "./share/ShareDialog";
 import CollabError, { collabErrorIndicatorAtom } from "./collab/CollabError";
-import { Login} from "./login/login"
 import type { RemoteExcalidrawElement } from "../packages/excalidraw/data/reconcile";
 import {
   CommandPalette,
   DEFAULT_CATEGORIES,
 } from "../packages/excalidraw/components/CommandPalette/CommandPalette";
+
 import {
   GithubIcon,
   XBrandIcon,
@@ -127,6 +128,8 @@ import DebugCanvas, {
   loadSavedDebugState,
 } from "./components/DebugCanvas";
 import { AIComponents } from "./components/AI";
+import { Card,Button,Input,Select, message} from 'antd';
+import "./login/login.scss";
 
 polyfill();
 
@@ -166,17 +169,17 @@ window.addEventListener(
 
 let isSelfEmbedding = false;
 
-if (window.self !== window.top) {
-  try {
-    const parentUrl = new URL(document.referrer);
-    const currentUrl = new URL(window.location.href);
-    if (parentUrl.origin === currentUrl.origin) {
-      isSelfEmbedding = true;
-    }
-  } catch (error) {
-    // ignore
-  }
-}
+// if (window.self !== window.top) {
+//   try {
+//     const parentUrl = new URL(document.referrer);
+//     const currentUrl = new URL(window.location.href);
+//     if (parentUrl.origin === currentUrl.origin) {
+//       isSelfEmbedding = true;
+//     }
+//   } catch (error) {
+//     // ignore
+//   }
+// }
 
 const shareableLinkConfirmDialog = {
   title: t("overwriteConfirm.modal.shareableLink.title"),
@@ -213,9 +216,9 @@ const initializeScene = async (opts: {
     scrollToContent?: boolean;
   } = await loadScene(null, null, localDataState);
 
-  let roomLinkData = getCollaborationLinkData('http://localhost:5173/main#room=d8e0fdbdece7fe941d32,ECy-gX59E2jgJIquMhIdMA' || window.location.href);
-  console.log('roomLinkData',roomLinkData)
-  console.log('window.location.href',window.location.href)
+  let roomLinkData = getCollaborationLinkData(window.location.href);
+  console.log('window.location.href', window.location.href)
+  console.log('roomLinkData', roomLinkData)
   const isExternalScene = !!(id || jsonBackendMatch || roomLinkData);
   if (isExternalScene) {
     if (
@@ -1127,13 +1130,73 @@ const ExcalidrawWrapper = () => {
   );
 };
 
+ const Login = () => {
+  const [name, setName] = useState('');
+  const [roomId, setRoomId] = useState('');
+  const [messageApi, contextHolder] = message.useMessage();
+  const submitHandle = () => {
+    if (!name) {
+      messageApi.open({
+        type: 'info',
+        content: '请输入姓名',
+        duration: 5,
+      });
+      return
+    }
+    if (!roomId) {
+      messageApi.open({
+        type: 'info',
+        content: '请输入现场id',
+        duration: 5,
+      });
+      return
+    }
+    window.open(`${window.location.origin}/ex/home#room=${roomId}`,'_self')
+  }
+  return (
+    <>
+  <div className="demo-main">
+    <div className="demo-login">
+      <Card>
+        <div className="login-text">欢迎登录</div>
+        <Input value={name} placeholder="请输入用户名" onChange={(e) => setName(e.target.value)} ></Input>
+        <Select value={roomId} placeholder="请输入roomId" size="large" options={
+          [{
+            label: '比亚迪公示板',
+            value: '75a03abde226f752e461,xPi9TKvO82gVUnpcaOxHng'
+          },
+          {
+            label: '电子车间公示板',
+            value: '95651493946d87fc7b86,DmA_zOFJgFvTmphpzViiAw'
+          },
+          {
+            label: '泰丰先行公示板',
+            value: 'd67279b74ebb4cd4547e5,GBR4Ni8oG64yLjlt79d0Bg'
+          },
+        ]
+        }
+        onChange={(value)=> {
+          setRoomId(value)
+        }}
+        >
+        </Select>
+        <div className="submit-btn"><Button type="primary" onClick={()=> submitHandle()}>登录</Button></div>
+      </Card>
+    </div>
+  </div>
+   </>
+  );
+};
+
 const ExcalidrawApp = () => {
-  console.log('window.location.href',window.location.href)
   return (
     <TopErrorBoundary>
       <Provider unstable_createStore={() => appJotaiStore}>
-      <Login></Login>     
-        {/* <ExcalidrawWrapper /> */}
+       <Routes>
+            {/* /home路径对应Home组件 */}
+            <Route path='/ex/login' element={<Login />} />
+            <Route path='/ex/home' element={<ExcalidrawWrapper />} />
+          </Routes>
       </Provider>
     </TopErrorBoundary>
   );
